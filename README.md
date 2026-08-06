@@ -14,7 +14,7 @@
 
 ## About
 - A manual implementation of bidirectional conversion between epoch time (in milliseconds) and human-readable timestamps.
-- This project deliberately avoids using <time.h>, implementing all conversion logic from scratch (leap year calculation, month decomposition, and timezone offsets). 
+- This project deliberately avoids using `time.h`, implementing all conversion logic from scratch (leap year calculation, month decomposition, and timezone offsets). 
 - The goal is to remain portable in scenarios lacking standard library support, such as resource-constrained embedded environments. 
 - This is a personal toolkit project. Copying, modification, and feedback for improvement are all welcome.
 
@@ -22,7 +22,7 @@
 
 ## Features
 - Bidirectional conversion between Epoch (millisecond precision) and human-readable time (Year/Month/Day/Hour/Minute/Second/Millisecond).
-- Supports arbitrary integer-hour timezone offsets** (not restricted to a fixed UTC+8).
+- Supports arbitrary integer-hour timezone offsets (not restricted to a fixed UTC+8).
 - Input validation: Invalid inputs are rejected with clear failure signals rather than returning erroneous results silently.
 - Includes boundary-case unit tests (leap years, day transitions, year transitions, and positive/negative timezone offsets).
 
