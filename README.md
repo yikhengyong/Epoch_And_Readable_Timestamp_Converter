@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------
 
 <div align="center">
-  <p><em>Coding & knowledgebase are not always perfect.</em></p>
+  <p><em>Coding are not always perfect.</em></p>
   <p><em>Feel free to <b>POINT OUT ERRORS</b> and <b>SHARE YOUR IDEAS</b>.</em></p>
   </div>
  
