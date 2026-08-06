@@ -17,6 +17,17 @@
 
 void convert_readable_to_epoch(uint64_t* epoch_output, unsigned short year_input, unsigned char month_input, unsigned char day_input, unsigned char hours_input, unsigned char minutes_input, unsigned char seconds_input, unsigned int milliseconds_input)
 {
+	if (month_input < 1 || month_input > 12 ||
+		day_input < 1 || day_input > 31 ||
+		hours_input > 23 || minutes_input > 59 ||
+		seconds_input > 59 || milliseconds_input > 999) {
+
+		printf("Invalid input values. Please check the input parameters.\n");
+
+		*epoch_output = 0; 
+
+		return;
+	}
 
 	// Step 1.0 Calculate number of leap years from 1970 to timestamp year
 	unsigned short year_from_1970;
@@ -53,17 +64,19 @@ void convert_readable_to_epoch(uint64_t* epoch_output, unsigned short year_input
 	totaldays_from_string = totaldays_from_string + ((uint64_t)(day_input - 1));
 
 	// Step 5.0 GMT
-	signed char GMT = 8;
-	hours_input = hours_input - GMT;
+	int GMT = 8;
+	int hours_signed = (int)hours_input - GMT;
 
-	if (hours_input < 0) {
-		hours_input = hours_input + 24;
-		totaldays_from_string = totaldays_from_string - 1;
+	if (hours_signed < 0) {
+		hours_signed += 24;
+		totaldays_from_string -= 1;
 	}
-	else if (hours_input > 23) {
-		hours_input = hours_input - 24;
-		totaldays_from_string = totaldays_from_string + 1;
+	else if (hours_signed > 23) {
+		hours_signed -= 24;
+		totaldays_from_string += 1;
 	};
+
+	hours_input = (unsigned char)hours_signed;
 
 	// Step 6.0  Calculate timestamp in milliseconds
 	timestamp_from_string = (totaldays_from_string * 86400000) + ((uint64_t)(hours_input * 3600000)) + ((uint64_t)(minutes_input * 60000)) + ((uint64_t)(seconds_input * 1000)) + milliseconds_input;
