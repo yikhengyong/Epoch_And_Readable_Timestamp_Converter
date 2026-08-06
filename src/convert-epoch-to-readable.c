@@ -19,50 +19,69 @@ void convert_epoch_to_readable(uint64_t epoch_input, unsigned short* year_output
 {
 
 	// Step 1.0  Calculate Total Days
-	unsigned int totaldays, remain_seconds, remain_milliseconds;
-	totaldays = epoch_input / (24ULL * 60 * 60 * 1000);
+	uint64_t totaldays_before_month_adjust;
+	unsigned int remain_seconds, remain_milliseconds;
+	totaldays_before_month_adjust = epoch_input / (24ULL * 60 * 60 * 1000);
 	remain_milliseconds = epoch_input % (24ULL * 60 * 60 * 1000);
 	remain_seconds = remain_milliseconds / 1000;
 
-	// Step 2.0  Calculate Year from 1970
+	// Step 2.0 Adjust GMT
+	int hours_signed = remain_seconds / 3600;
+	remain_seconds = remain_seconds % 3600;
+
+	int GMT = 8;
+	hours_signed += GMT;
+	if (hours_signed < 0) {
+		hours_signed += 24;
+		totaldays_before_month_adjust -= 1;
+	}
+	else if (hours_signed > 23) {
+		hours_signed -= 24;
+		totaldays_before_month_adjust += 1;
+	}
+
+	// Step 3.0  Calculate Year from 1970
 	unsigned short year = 1970; //Unix epoch start in 1 Jan 1970 00:00:00
-	unsigned char leap_year_adjustment = 0;//1970 is not leap year, so initialize to 0
+	unsigned char leap_year_adjustment = 0;
 
-	signed int i = totaldays;//totaldays is unsigned int, but use totaldays in iteration, last iteration will be negative value (signed) and cause error.
+	// totaldays_before_month_adjust is unsigned int, but use totaldays_before_month_adjust in iteration, last iteration will be negative value (signed) and cause error.
+	int64_t i = (int64_t)totaldays_before_month_adjust;
 
-	while (i >= (365 + leap_year_adjustment)) {
+	/** Reason of Use for (;;) instead of while (i >= 0)
+	* The leap year status is calculated on the fly at the start of each iteration.
+	* The same value is used for both the loop condition and the day deduction.
+	* So there are no state inconsistencies across year boundaries.
+	*/
 
-		/*
-		Step 2.1  Determine leap year
-			1) Divisible by 4 && Not Divisible by 100
-			2) Or Divisible by 400.
-		*/
-
+	for (;;) { 
+		
 		if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
-			leap_year_adjustment = 1; //365+1=366 days
+			leap_year_adjustment = 1;
 		}
 		else {
-			leap_year_adjustment = 0; //365+0=365 days
+			leap_year_adjustment = 0;
 		}
 
-		// Step 2.2  Add 1 year
+		unsigned int days_this_year = 365 + leap_year_adjustment;
+
+		// If there aren't enough days left to consume another full year; it stops at this one.
+		if (i < (int64_t)days_this_year) {
+			break; 
+		}
+
+		i -= days_this_year;
 		year++;
-		i -= (365 + leap_year_adjustment); // 365 or 366 days in totaldays been used for add 1 year
 	}
 
-	// Step 2.3 Calibrate totaldays
-	if (i < 0) {
-		totaldays = i + (365 + leap_year_adjustment);
-		year--; // If don't have these code, exp:31-12-2024 will become 2025
-	}
-	else {
-		totaldays = i;
-	}
+	/** After the loop finishes, i always satisfies 0 <= i < number of days in the current year.
+	 * So there is no risk of an out-of-bounds error.
+	 */
+	unsigned int totaldays = (unsigned int)i;
 
-	// Step 3.0  Determine Months
+	// Step 4.0  Determine Months
 	unsigned char days_in_each_month[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 
-	// Step 3.1  Determine number of days in Febuary
+	// Step 4.1  Determine number of days in Febuary
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
 		days_in_each_month[1] = 29;
 	}
@@ -70,46 +89,27 @@ void convert_epoch_to_readable(uint64_t epoch_input, unsigned short* year_output
 		days_in_each_month[1] = 28;
 	}
 
-	// Step 3.2  Calculate month
+	// Step 4.2  Calculate month
 	unsigned char month = 0;
 	while (totaldays >= days_in_each_month[month]) {
 		totaldays -= days_in_each_month[month];
 		month++;
 	}
 
-	// Step 3.3  Calibrate day and month
+	// Step 4.3  Calibrate day and month
 	unsigned char day = totaldays + 1; // start count from 1st day of the month, so need +1
 	month++; // int month = 0 (January), so need +1          
 
-	// Step 4.0  Determine hours
-	unsigned char hours;
-	hours = (remain_seconds / (60 * 60));
-	remain_seconds = remain_seconds % (60 * 60);
-
-	// Step 4.1 Adjust GMT
-	signed char GMT = 8;
-	hours = hours + GMT;
-
-	if (hours < 0) {
-		hours = hours + 24;
-		totaldays = totaldays - 1;
-	}
-	else if (hours > 23) {
-		hours = hours - 24;
-		totaldays = totaldays + 1;
-	};
-
-	// Step 5.0  Determine minutes and seconds
-	unsigned char minutes, seconds;
-	minutes = remain_seconds / 60;
-	seconds = remain_seconds % 60;
+	// Step 5.0  Determine minutes, seconds and milliseconds
+	unsigned char minutes = remain_seconds / 60;
+	unsigned char seconds = remain_seconds % 60;
 	remain_milliseconds = remain_milliseconds % 1000;
 
 	//Step 6.0  Output
 	*year_output = year;
 	*month_output = month;
 	*day_output = day;
-	*hours_output = hours;
+	*hours_output = (unsigned char)hours_signed;
 	*minutes_output = minutes;
 	*seconds_output = seconds;
 	*milliseconds_output = remain_milliseconds;
