@@ -69,7 +69,7 @@ This project deliberately writes out the entire process by hand with the aims of
 
 <br>
 
-## Example
+## Example Usage
 
 	Epoch: 4107513600000
 	Readable: 00:00:00:000 01/03/2100
