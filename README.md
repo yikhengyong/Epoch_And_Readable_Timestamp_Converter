@@ -66,6 +66,7 @@ This project deliberately writes out the entire process by hand with the aims of
 	│   └── convert-epoch-to-readable.c
 	├── main.c
 	├── README.md
+	├── LICENSE
 
 <br>
 
