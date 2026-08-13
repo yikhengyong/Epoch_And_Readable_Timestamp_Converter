@@ -1,0 +1,47 @@
+# The display name of the workflow as it appears in the GitHub Actions tab. Can change it if need
+name: Project_Template
+
+# Defines what events cause the workflow to run. 
+# Here, it triggers on any push or pull_request aimed at the main or master branches.
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} # Name appeared in GitHub after click Project_Template in Action tab. Can change it if need.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest] # Run on Ubuntu and Windows OS
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Build Tools (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Set up MinGW/Make (Windows)
+        if: runner.os == 'Windows'
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: |
+            powershell -Command "
+            choco install mingw -y
+            "
+
+      - name: Compile Project
+        run: make
+
+      - name: Test Execution
+        shell: bash
+        run: ./build/main
