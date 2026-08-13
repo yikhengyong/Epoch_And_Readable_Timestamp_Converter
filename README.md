@@ -64,9 +64,38 @@ This project deliberately writes out the entire process by hand with the aims of
 	├── src
 	│   └── convert-readable-to-epoch.c
 	│   └── convert-epoch-to-readable.c
+	├── .github/
+	│   └── workflows/
+	|		└── test.yml
 	├── main.c
 	├── README.md
 	├── LICENSE
+	├── .gitignore
+	├── Makefile
+
+<br>
+
+## Testing on local Windows/Linux PC
+1. Got to repository page and click `<>Code` --> Download zip
+2. Extract the zip
+3. Open Command Prompt (Windows) or Terminal (Linux) 
+4. Direct to directory which contain `main.c`.
+5. Build executable
+	- `make`
+6. Run executable
+	- `make run` or `make test`
+7. Cleanup executable
+    - `make clean`
+
+<br>
+
+## Testing on Github
+1. After `.yml` is uploaded to repository, GitHub will run your coding automatically.
+2. Go to repository page and click `Actions` in top menu.
+3. Click the project `Epoch_And_Readable_Timestamp_Converter` at left side menu.
+4. GitHub will test coding automatically when push new commit. Click the `[Commit]` to check the workflow log.
+	- Example: `Add GitHub Actions workflow for building and testing` 
+6. Click the `build on ubuntu-latest` or `build on windows-latest` to check the running log.
 
 <br>
 
