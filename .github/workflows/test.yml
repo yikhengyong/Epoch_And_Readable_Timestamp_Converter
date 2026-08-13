@@ -1,5 +1,5 @@
 # The display name of the workflow as it appears in the GitHub Actions tab. Can change it if need
-name: Project_Template
+name: Epoch_And_Readable_Timestamp_Converter
 
 # Defines what events cause the workflow to run. 
 # Here, it triggers on any push or pull_request aimed at the main or master branches.
