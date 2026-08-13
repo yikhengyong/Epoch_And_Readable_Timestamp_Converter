@@ -22,11 +22,11 @@ void convert_epoch_to_readable(uint64_t epoch_input, unsigned short* year_output
 	uint64_t totaldays_before_month_adjust;
 	unsigned int remain_seconds, remain_milliseconds;
 	totaldays_before_month_adjust = epoch_input / (24ULL * 60 * 60 * 1000);
-	remain_milliseconds = (unsigned int)epoch_input % (24ULL * 60 * 60 * 1000);
+	remain_milliseconds = epoch_input % (24ULL * 60 * 60 * 1000);
 	remain_seconds = remain_milliseconds / 1000;
 
 	// Step 2.0 Adjust GMT
-	int hours_signed = (int)(remain_seconds / 3600);
+	int hours_signed = remain_seconds / 3600;
 	remain_seconds = remain_seconds % 3600;
 
 	int GMT = 8;
@@ -62,7 +62,7 @@ void convert_epoch_to_readable(uint64_t epoch_input, unsigned short* year_output
 			leap_year_adjustment = 0;
 		}
 
-		unsigned int days_this_year = (unsigned int)(365 + leap_year_adjustment);
+		unsigned int days_this_year = 365 + leap_year_adjustment;
 
 		// If there aren't enough days left to consume another full year; it stops at this one.
 		if (i < (int64_t)days_this_year) {
@@ -97,12 +97,12 @@ void convert_epoch_to_readable(uint64_t epoch_input, unsigned short* year_output
 	}
 
 	// Step 4.3  Calibrate day and month
-	unsigned char day = (unsigned char)(totaldays + 1); // start count from 1st day of the month, so need +1
+	unsigned char day = totaldays + 1; // start count from 1st day of the month, so need +1
 	month++; // int month = 0 (January), so need +1          
 
 	// Step 5.0  Determine minutes, seconds and milliseconds
-	unsigned char minutes = (unsigned char)(remain_seconds / 60);
-	unsigned char seconds = (unsigned char)(remain_seconds % 60);
+	unsigned char minutes = remain_seconds / 60;
+	unsigned char seconds = remain_seconds % 60;
 	remain_milliseconds = remain_milliseconds % 1000;
 
 	//Step 6.0  Output
