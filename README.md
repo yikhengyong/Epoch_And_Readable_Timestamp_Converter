@@ -45,6 +45,9 @@
 	- Assumes the passed GMT offset falls within real-world ranges (approximately -12 to +14 hours). 
 	- Extreme inputs outside this range have not been stress-tested.
 
+5. Ignore warnings related to `convert_epoch_to_readable`
+	- Found that the result is not accurate after solving data conversion warning.
+
 <br>
 
 ## Why No <time.h>?
